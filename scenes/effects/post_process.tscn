@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://shaders/post_process.gdshader" id="1"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
+shader = ExtResource("1")
+shader_parameter/grain_intensity = 0.045
+shader_parameter/vignette_intensity = 0.35
+shader_parameter/vignette_radius = 0.85
+shader_parameter/aberration_strength = 1.0
+
+[node name="PostProcess" type="CanvasLayer"]
+layer = 100
+
+[node name="Overlay" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_post")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
