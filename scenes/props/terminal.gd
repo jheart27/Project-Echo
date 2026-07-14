@@ -1,7 +1,7 @@
 extends StaticBody3D
-## Grey-box test interactable: a wall terminal. Interacting prints the next
-## log line to the Output panel and flickers the screen glow so there is
-## visible in-game feedback. Stands in for real lore terminals later.
+## Wall terminal interactable. Interacting shows the next log line as
+## in-game diegetic text (via the player's show_message) and flickers the
+## screen glow. Stands in for real lore terminals later.
 
 @export var log_lines: Array[String] = [
 	"…connection to Authority lost 4,102 cycles ago.",
@@ -18,10 +18,12 @@ func get_interact_prompt() -> String:
 	return "[E] Read terminal"
 
 
-func interact(_player: Node) -> void:
+func interact(player: Node) -> void:
 	if not log_lines.is_empty():
-		print("[Terminal] ", log_lines[_next_line])
+		var line: String = log_lines[_next_line]
 		_next_line = (_next_line + 1) % log_lines.size()
+		if player and player.has_method("show_message"):
+			player.show_message(line)
 	_flicker()
 
 

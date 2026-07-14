@@ -46,8 +46,10 @@ var _focused_interactable: Node = null
 @onready var _camera: Camera3D = $Head/Camera3D
 @onready var _interact_ray: RayCast3D = $Head/Camera3D/InteractRay
 @onready var _prompt_label: Label = $HUD/InteractPrompt
+@onready var _message_label: Label = $HUD/Message
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+var _message_tween: Tween
 
 
 func _ready() -> void:
@@ -56,6 +58,7 @@ func _ready() -> void:
 	_interact_ray.target_position = Vector3(0.0, 0.0, -interact_distance)
 	_interact_ray.add_exception(self)
 	_prompt_label.text = ""
+	_message_label.text = ""
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	GameState.register_player(self)
 
@@ -160,3 +163,20 @@ func _update_interact_focus() -> void:
 func _try_interact() -> void:
 	if _focused_interactable and _focused_interactable.has_method("interact"):
 		_focused_interactable.interact(self)
+
+
+## Displays a line of diegetic text (terminal output, pickup notices) with a
+## typewriter reveal, then fades it out. Interactables call this instead of
+## printing to the console.
+func show_message(text: String, hold_time := 4.0) -> void:
+	if _message_tween:
+		_message_tween.kill()
+	_message_label.text = text
+	_message_label.modulate.a = 1.0
+	_message_label.visible_characters = 0
+	_message_tween = create_tween()
+	_message_tween.tween_property(
+		_message_label, "visible_characters", text.length(), maxf(0.4, text.length() * 0.025)
+	)
+	_message_tween.tween_interval(hold_time)
+	_message_tween.tween_property(_message_label, "modulate:a", 0.0, 0.8)

@@ -23,6 +23,12 @@ and press **F5**. The main scene is `scenes/levels/test_corridor.tscn`.
 | E | Interact |
 | Esc | Release mouse (click to recapture) |
 
+## Current build
+
+One playable slice: corridor → keycard (look for the flickering light) →
+security door → chamber → bridge over a chasm. Progression uses GameState
+flags, not an inventory — pickups/levers/etc. just set flags that gates check.
+
 ## Project layout
 
 - `autoload/game_state.gd` — global singleton (`GameState`), minimal for now
