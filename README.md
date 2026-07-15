@@ -27,11 +27,14 @@ and press **F5**. The main scene is `scenes/levels/test_corridor.tscn`.
 
 ## Current build
 
-One playable slice: corridor → keycard (look for the flickering light) →
-security door → chamber → wrecked records office (thermal goggles) →
-bridge over a chasm → stairwell down → dark maintenance tunnels and pump
-station (bring the goggles). Progression uses GameState flags, not an
-inventory — pickups/levers/etc. just set flags that gates check.
+Following the "Beginning" board of the Construct map: corridor → keycard
+(look for the flickering light) → security door → Grand Columns chamber →
+wrecked records office (thermal goggles) → bridge over a chasm → stairwell
+down → dark maintenance tunnels → pump station (prime the generator) → back
+up: the NO POWER door on the platform now opens → Grand Hall → Elevator
+lobby (dead shaft to Floors 25/50/75) → Labs and Controls → the cyber
+mutant pen. Progression uses GameState flags, not an inventory —
+pickups/levers/generators just set flags that gates check.
 
 ## Textures
 
