@@ -16,12 +16,14 @@ shader_parameter/vignette_intensity = 0.35
 shader_parameter/vignette_radius = 0.85
 shader_parameter/aberration_strength = 1.0
 
-[node name="PostProcess" type="CanvasLayer"]
-layer = 100
+[node name="PostProcess" type="Node"]
 script = ExtResource("3")
 
-[node name="ThermalOverlay" type="ColorRect" parent="."]
+[node name="ThermalLayer" type="CanvasLayer" parent="."]
+layer = 99
 visible = false
+
+[node name="ThermalOverlay" type="ColorRect" parent="ThermalLayer"]
 material = SubResource("ShaderMaterial_thermal")
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,7 +32,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Overlay" type="ColorRect" parent="."]
+[node name="GrainLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="Overlay" type="ColorRect" parent="GrainLayer"]
 material = SubResource("ShaderMaterial_post")
 anchors_preset = 15
 anchor_right = 1.0

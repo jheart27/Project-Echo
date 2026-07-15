@@ -80,6 +80,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("toggle_thermal"):
 		if GameState.has_flag(&"thermal_goggles"):
 			GameState.set_thermal(not GameState.thermal_active)
+			show_message("OPTICS: THERMAL" if GameState.thermal_active else "OPTICS: STANDARD", 1.2)
+		else:
+			show_message("NO OPTICS MODULE", 1.2)
 
 
 func _physics_process(delta: float) -> void:

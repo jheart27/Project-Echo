@@ -28,9 +28,10 @@ and press **F5**. The main scene is `scenes/levels/test_corridor.tscn`.
 ## Current build
 
 One playable slice: corridor → keycard (look for the flickering light) →
-security door → chamber → bridge over a chasm → thermal goggles on the far
-platform. Progression uses GameState flags, not an inventory — pickups/
-levers/etc. just set flags that gates check.
+security door → chamber → wrecked records office (thermal goggles) →
+bridge over a chasm → stairwell down → dark maintenance tunnels and pump
+station (bring the goggles). Progression uses GameState flags, not an
+inventory — pickups/levers/etc. just set flags that gates check.
 
 ## Textures
 
