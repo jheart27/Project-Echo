@@ -1,7 +1,7 @@
 extends CharacterBody3D
-## First-person controller: deliberate walk, stamina-limited sprint,
-## mouse look, subtle head bob, and an interact raycast. No combat, no
-## free jump — traversal is ledges/ladders/stairs, scripted per zone.
+## First-person controller: deliberate walk, stamina-limited sprint, a
+## modest jump, mouse look, subtle head bob, and an interact raycast.
+## No combat yet. Thermal optics toggle on G once the goggles flag is set.
 
 signal stamina_changed(current: float, maximum: float)
 signal interact_focus_changed(interactable: Node)
@@ -11,6 +11,8 @@ signal interact_focus_changed(interactable: Node)
 @export var sprint_speed := 5.4
 @export var acceleration := 9.0
 @export var deceleration := 11.0
+## Deliberately low — a heavy hop over debris, not an FPS bunny jump.
+@export var jump_velocity := 4.0
 
 @export_group("Stamina")
 @export var max_stamina := 100.0
@@ -75,11 +77,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	elif event.is_action_pressed("interact"):
 		_try_interact()
+	elif event.is_action_pressed("toggle_thermal"):
+		if GameState.has_flag(&"thermal_goggles"):
+			GameState.set_thermal(not GameState.thermal_active)
 
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
+	elif Input.is_action_just_pressed("jump"):
+		velocity.y = jump_velocity
 
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	var wish_dir := (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()

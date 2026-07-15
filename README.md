@@ -19,15 +19,27 @@ and press **F5**. The main scene is `scenes/levels/test_corridor.tscn`.
 | --- | --- |
 | WASD | Move |
 | Mouse | Look |
+| Space | Jump (low, weighty hop) |
 | Shift (hold) | Sprint (limited by stamina) |
 | E | Interact |
+| G | Toggle thermal optics (once goggles are found) |
 | Esc | Release mouse (click to recapture) |
 
 ## Current build
 
 One playable slice: corridor → keycard (look for the flickering light) →
-security door → chamber → bridge over a chasm. Progression uses GameState
-flags, not an inventory — pickups/levers/etc. just set flags that gates check.
+security door → chamber → bridge over a chasm → thermal goggles on the far
+platform. Progression uses GameState flags, not an inventory — pickups/
+levers/etc. just set flags that gates check.
+
+## Textures
+
+`textures/` holds 256px procedurally generated PS2-grunge albedo maps
+(low-quality JPEG on purpose — the compression artifacts are part of the
+look), applied via world-space triplanar materials in `materials/` with
+nearest-neighbour filtering. Sourcing CC0 photo textures (ambientCG /
+Poly Haven) is blocked from this dev environment's network; drop-in
+replacements just need to keep the same filenames.
 
 ## Project layout
 

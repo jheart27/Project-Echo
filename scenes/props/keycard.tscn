@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://scenes/props/keycard.gd" id="1"]
+[ext_resource type="Script" path="res://scenes/props/pickup.gd" id="1"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_card"]
 size = Vector3(0.22, 0.02, 0.14)
@@ -16,6 +16,9 @@ size = Vector3(0.5, 0.4, 0.5)
 
 [node name="Keycard" type="StaticBody3D" groups=["interactable"]]
 script = ExtResource("1")
+flag = &"keycard_stratum9"
+prompt = "[E] Take access card"
+pickup_message = "ACCESS CARD ACQUIRED — DOOR CONTROL, THIS STRATUM"
 
 [node name="CardMesh" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_card")

@@ -7,15 +7,17 @@ shader_type canvas_item;
 
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear, repeat_disable;
 
-uniform float grain_intensity : hint_range(0.0, 0.2) = 0.045;
+uniform float grain_intensity : hint_range(0.0, 0.2) = 0.035;
 uniform float vignette_intensity : hint_range(0.0, 1.0) = 0.35;
 uniform float vignette_radius : hint_range(0.3, 1.0) = 0.85;
 uniform float aberration_strength : hint_range(0.0, 4.0) = 1.0;
 
+// Hash from pixel coordinates (not UV) so the noise is uncorrelated per
+// pixel — UV-based hashing produced visible diagonal patterning.
 float hash(vec2 p) {
-	p = fract(p * vec2(443.897, 441.423));
-	p += dot(p, p.yx + 19.19);
-	return fract((p.x + p.y) * p.x);
+	vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+	p3 += dot(p3, p3.yzx + 33.33);
+	return fract((p3.x + p3.y) * p3.z);
 }
 
 void fragment() {
@@ -30,9 +32,11 @@ void fragment() {
 	color.g = texture(screen_texture, uv).g;
 	color.b = texture(screen_texture, uv - ab_offset).b;
 
-	// Animated film grain.
-	float grain = hash(uv * 731.7 + vec2(fract(TIME * 7.31), fract(TIME * 3.17)) * 913.0);
-	color += (grain - 0.5) * grain_intensity;
+	// Animated film grain, weighted toward the shadows like real film stock.
+	vec2 seed = fract(vec2(TIME * 0.1231, TIME * 0.3171)) * 1024.0;
+	float grain = hash(FRAGCOORD.xy + seed);
+	float luma = dot(color, vec3(0.299, 0.587, 0.114));
+	color += (grain - 0.5) * grain_intensity * (1.0 - luma * 0.6);
 
 	// Vignette.
 	float falloff = smoothstep(vignette_radius - 0.45, vignette_radius, dist);

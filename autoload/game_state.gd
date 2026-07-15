@@ -7,8 +7,10 @@ extends Node
 
 signal player_registered(player: Node3D)
 signal flag_set(flag: StringName)
+signal thermal_toggled(active: bool)
 
 var player: Node3D
+var thermal_active := false
 
 var _flags: Dictionary = {}
 
@@ -27,3 +29,10 @@ func set_flag(flag: StringName) -> void:
 
 func has_flag(flag: StringName) -> bool:
 	return _flags.has(flag)
+
+
+func set_thermal(active: bool) -> void:
+	if thermal_active == active:
+		return
+	thermal_active = active
+	thermal_toggled.emit(active)
