@@ -1,0 +1,439 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/props/terminal.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/effects/post_process.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/props/light_panel.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/props/keycard.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/props/security_door.tscn" id="6"]
+[ext_resource type="Script" path="res://scenes/props/respawn_zone.gd" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/props/goggles.tscn" id="8"]
+[ext_resource type="Material" path="res://materials/concrete_floor.tres" id="9"]
+[ext_resource type="Material" path="res://materials/concrete_wall.tres" id="10"]
+[ext_resource type="Material" path="res://materials/rusty_metal.tres" id="11"]
+[ext_resource type="Material" path="res://materials/metal_plates.tres" id="12"]
+[ext_resource type="Material" path="res://materials/grate.tres" id="13"]
+
+[sub_resource type="Environment" id="Environment_corridor"]
+background_mode = 1
+background_color = Color(0.015, 0.017, 0.02, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.38, 0.43, 1)
+ambient_light_energy = 0.7
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.4
+fog_enabled = true
+fog_light_color = Color(0.11, 0.12, 0.14, 1)
+fog_density = 0.018
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.025
+volumetric_fog_albedo = Color(0.75, 0.78, 0.8, 1)
+volumetric_fog_anisotropy = 0.55
+volumetric_fog_length = 128.0
+adjustment_enabled = true
+adjustment_contrast = 1.05
+adjustment_saturation = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_catch"]
+size = Vector3(30, 4, 68)
+
+[node name="TestCorridor" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_corridor")
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8192, -0.4699, 0.329, 0, 0.5736, 0.8192, -0.5736, -0.671, 0.4699, 0, 40, -60)
+light_color = Color(0.82, 0.88, 1, 1)
+light_energy = 1.3
+light_volumetric_fog_energy = 2.0
+shadow_enabled = true
+directional_shadow_max_distance = 250.0
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="CorridorFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -40)
+use_collision = true
+size = Vector3(6, 0.5, 82)
+material = ExtResource("9")
+
+[node name="CorridorWallLeftA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 2.75, -31.75)
+use_collision = true
+size = Vector3(0.5, 6, 65.5)
+material = ExtResource("10")
+
+[node name="CorridorWallLeftB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 2.75, -74.75)
+use_collision = true
+size = Vector3(0.5, 6, 12.5)
+material = ExtResource("10")
+
+[node name="AlcoveLintel" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.25, 4.5, -66.5)
+use_collision = true
+size = Vector3(0.5, 3, 4)
+material = ExtResource("10")
+
+[node name="CorridorWallRight" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.25, 2.75, -40)
+use_collision = true
+size = Vector3(0.5, 6, 82)
+material = ExtResource("10")
+
+[node name="CorridorWallBack" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 1.25)
+use_collision = true
+size = Vector3(6, 6, 0.5)
+material = ExtResource("10")
+
+[node name="CorridorCeiling1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.25, -6.5)
+use_collision = true
+size = Vector3(5, 0.5, 15)
+material = ExtResource("10")
+
+[node name="CorridorCeiling2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.25, -23)
+use_collision = true
+size = Vector3(5, 0.5, 14)
+material = ExtResource("10")
+
+[node name="CorridorCeiling3" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.25, -39)
+use_collision = true
+size = Vector3(5, 0.5, 14)
+material = ExtResource("10")
+
+[node name="CorridorCeiling4" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.25, -55)
+use_collision = true
+size = Vector3(5, 0.5, 14)
+material = ExtResource("10")
+
+[node name="CorridorCeiling5" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.25, -72.5)
+use_collision = true
+size = Vector3(5, 0.5, 17)
+material = ExtResource("10")
+
+[node name="PipeA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.87, 4.3, -40)
+use_collision = true
+size = Vector3(0.15, 0.15, 82)
+material = ExtResource("11")
+
+[node name="PipeB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.87, 4.0, -40)
+use_collision = true
+size = Vector3(0.15, 0.15, 82)
+material = ExtResource("11")
+
+[node name="CorridorVent" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.96, 0.5, -8)
+size = Vector3(0.06, 0.6, 1)
+material = ExtResource("13")
+
+[node name="Crate1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(0.9397, 0, 0.342, 0, 1, 0, -0.342, 0, 0.9397, 1.2, 0.5, -20)
+use_collision = true
+size = Vector3(1, 1, 1)
+material = ExtResource("12")
+
+[node name="Crate2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(0.8192, 0, -0.5736, 0, 1, 0, 0.5736, 0, 0.8192, -1.4, 0.4, -52)
+use_collision = true
+size = Vector3(0.8, 0.8, 0.8)
+material = ExtResource("12")
+
+[node name="AlcoveFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, -0.25, -66.5)
+use_collision = true
+size = Vector3(4.5, 0.5, 5)
+material = ExtResource("9")
+
+[node name="AlcoveCeiling" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.25, -66.5)
+use_collision = true
+size = Vector3(4.5, 0.5, 5)
+material = ExtResource("10")
+
+[node name="AlcoveWallBack" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.75, 1.5, -66.5)
+use_collision = true
+size = Vector3(0.5, 3.5, 5)
+material = ExtResource("10")
+
+[node name="AlcoveVent" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.46, 2.3, -66.5)
+size = Vector3(0.06, 0.9, 1.2)
+material = ExtResource("13")
+
+[node name="AlcoveWallNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 1.5, -64.25)
+use_collision = true
+size = Vector3(4, 3.5, 0.5)
+material = ExtResource("10")
+
+[node name="AlcoveWallSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 1.5, -68.75)
+use_collision = true
+size = Vector3(4, 3.5, 0.5)
+material = ExtResource("10")
+
+[node name="AlcoveCrate" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7, 0.45, -66.5)
+use_collision = true
+size = Vector3(0.6, 0.9, 0.6)
+material = ExtResource("12")
+
+[node name="RoomFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -106)
+use_collision = true
+size = Vector3(46, 0.5, 52)
+material = ExtResource("9")
+
+[node name="RoomWallLeft" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.25, 20.25, -106)
+use_collision = true
+size = Vector3(0.5, 41, 52)
+material = ExtResource("10")
+
+[node name="RoomWallRight" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.25, 20.25, -106)
+use_collision = true
+size = Vector3(0.5, 41, 52)
+material = ExtResource("10")
+
+[node name="RoomWallNearLeft" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.25, 20.25, -80.75)
+use_collision = true
+size = Vector3(20.5, 41, 0.5)
+material = ExtResource("10")
+
+[node name="RoomWallNearRight" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.25, 20.25, -80.75)
+use_collision = true
+size = Vector3(20.5, 41, 0.5)
+material = ExtResource("10")
+
+[node name="RoomWallNearTop" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23, -80.75)
+use_collision = true
+size = Vector3(4, 36, 0.5)
+material = ExtResource("10")
+
+[node name="RoomWallFarLeft" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.25, 20.25, -131.25)
+use_collision = true
+size = Vector3(20.5, 41, 0.5)
+material = ExtResource("10")
+
+[node name="RoomWallFarRight" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.25, 20.25, -131.25)
+use_collision = true
+size = Vector3(20.5, 41, 0.5)
+material = ExtResource("10")
+
+[node name="RoomWallFarTop" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23, -131.25)
+use_collision = true
+size = Vector3(4, 36, 0.5)
+material = ExtResource("10")
+
+[node name="RoomCeilingA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40.25, -92)
+use_collision = true
+size = Vector3(46, 0.5, 22)
+material = ExtResource("10")
+
+[node name="RoomCeilingB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40.25, -120)
+use_collision = true
+size = Vector3(46, 0.5, 22)
+material = ExtResource("10")
+
+[node name="Pillar1" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 20, -96)
+use_collision = true
+size = Vector3(3, 40, 3)
+material = ExtResource("11")
+
+[node name="Pillar2" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 20, -96)
+use_collision = true
+size = Vector3(3, 40, 3)
+material = ExtResource("11")
+
+[node name="Pillar3" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 20, -116)
+use_collision = true
+size = Vector3(3, 40, 3)
+material = ExtResource("11")
+
+[node name="Pillar4" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 20, -116)
+use_collision = true
+size = Vector3(3, 40, 3)
+material = ExtResource("11")
+
+[node name="Monument" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -106)
+use_collision = true
+size = Vector3(8, 2, 8)
+material = ExtResource("12")
+
+[node name="ChasmWallLeft" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.25, -10, -165.6)
+use_collision = true
+size = Vector3(0.5, 101, 69)
+material = ExtResource("10")
+
+[node name="ChasmWallRight" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.25, -10, -165.6)
+use_collision = true
+size = Vector3(0.5, 101, 69)
+material = ExtResource("10")
+
+[node name="ChasmEndWall" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, -199.75)
+use_collision = true
+size = Vector3(31, 101, 0.5)
+material = ExtResource("10")
+
+[node name="ChasmFloor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -60.25, -165.6)
+use_collision = true
+size = Vector3(31, 0.5, 69)
+material = ExtResource("9")
+
+[node name="ChasmCeilingA" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40.25, -143.25)
+use_collision = true
+size = Vector3(31, 0.5, 24)
+material = ExtResource("10")
+
+[node name="ChasmCeilingB" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40.25, -182.5)
+use_collision = true
+size = Vector3(31, 0.5, 35)
+material = ExtResource("10")
+
+[node name="Bridge" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -161.5)
+use_collision = true
+size = Vector3(3, 0.5, 61)
+material = ExtResource("13")
+
+[node name="Platform" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, -195.5)
+use_collision = true
+size = Vector3(31, 0.5, 8.5)
+material = ExtResource("9")
+
+[node name="PlatformCrate" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.4, -196)
+use_collision = true
+size = Vector3(0.8, 0.8, 0.8)
+material = ExtResource("12")
+
+[node name="PanelCorridor1" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.97, -10)
+
+[node name="PanelCorridor1b" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.97, -22)
+
+[node name="PanelCorridor2" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.97, -35)
+
+[node name="PanelCorridor3" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.97, -74)
+light_energy = 1.4
+flicker = true
+
+[node name="SodiumPanel" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.97, -58)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 3.0
+
+[node name="PanelAlcove" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 2.97, -66.5)
+light_energy = 1.1
+flicker = true
+
+[node name="PanelDoorLeft" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -3.4, 2.6, -130.96)
+light_energy = 2.2
+
+[node name="PanelDoorRight" parent="." instance=ExtResource("4")]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 3.4, 2.6, -130.96)
+light_energy = 2.2
+
+[node name="PanelRoomLeft1" parent="." instance=ExtResource("4")]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -21.96, 3, -90)
+light_energy = 2.5
+
+[node name="PanelRoomLeft2" parent="." instance=ExtResource("4")]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -21.96, 3, -122)
+light_energy = 2.5
+
+[node name="PanelRoomRight1" parent="." instance=ExtResource("4")]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 21.96, 3, -90)
+light_energy = 2.5
+
+[node name="PanelRoomRight2" parent="." instance=ExtResource("4")]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 21.96, 3, -122)
+light_energy = 2.5
+
+[node name="PanelChasmLeft1" parent="." instance=ExtResource("4")]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -14.96, 2.5, -140)
+light_energy = 2.0
+
+[node name="PanelChasmLeft2" parent="." instance=ExtResource("4")]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -14.96, 2.5, -185)
+light_energy = 2.0
+
+[node name="PanelChasmRight1" parent="." instance=ExtResource("4")]
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 14.96, 2.5, -162)
+light_energy = 2.0
+
+[node name="Terminal" parent="." instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 1.3, -40)
+
+[node name="Keycard" parent="." instance=ExtResource("5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7, 1.05, -66.5)
+
+[node name="Goggles" parent="." instance=ExtResource("8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.92, -196)
+
+[node name="SecurityDoor" parent="." instance=ExtResource("6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -131.25)
+
+[node name="SealedDoor" parent="." instance=ExtResource("6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -199.3)
+sealed = true
+
+[node name="RedBeacon" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -54, -165)
+light_color = Color(1, 0.12, 0.1, 1)
+light_energy = 2.5
+omni_range = 34.0
+
+[node name="BridgeRespawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -133.5)
+
+[node name="ChasmCatch" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -52, -165.6)
+script = ExtResource("7")
+respawn_point = NodePath("../BridgeRespawn")
+message = "RETRIEVED BY SAFEGUARD. DO NOT FALL."
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChasmCatch"]
+shape = SubResource("BoxShape3D_catch")
+
+[node name="Player" parent="." instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -3)
+
+[node name="PostProcess" parent="." instance=ExtResource("3")]
