@@ -28,13 +28,18 @@ and press **F5**. The main scene is `scenes/levels/test_corridor.tscn`.
 ## Current build
 
 Following the "Beginning" board of the Construct map: corridor → keycard
-(look for the flickering light) → security door → Grand Columns chamber →
-wrecked records office (thermal goggles) → bridge over a chasm → stairwell
-down → dark maintenance tunnels → pump station (prime the generator) → back
-up: the NO POWER door on the platform now opens → Grand Hall → Elevator
-lobby (dead shaft to Floors 25/50/75) → Labs and Controls → the cyber
-mutant pen. Progression uses GameState flags, not an inventory —
-pickups/levers/generators just set flags that gates check.
+(look for the flickering light) → security door → Grand Columns chamber
+(catwalk loop above) → wrecked records office (thermal goggles) → bridge
+over a chasm → stairwell down → dark maintenance tunnels → pump station
+(prime the generator) → back up: the NO POWER door on the platform now
+opens → Grand Hall → Elevator lobby (dead shaft to Floors 25/50/75) →
+Labs and Controls → the cyber mutant pen. From the lobby, ramps climb to
+upper catwalks and a high doorway into the Titan Approach — sprint-jump
+the collapsed floor (falling drops you into a crawl duct that spits you
+back out over the lobby) — ending at the Titan Construct zone: a half-
+built 48m titan in scaffolding, gantry crane, elevated control room, and
+the hermetic gate to the next zone. Progression uses GameState flags, not
+an inventory — pickups/levers/generators just set flags that gates check.
 
 ## Textures
 
