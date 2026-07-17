@@ -1121,7 +1121,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 19.9, -272)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 19.9, -275)
 
 [node name="Cables8" parent="." instance=ExtResource("14")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 3.4, -265)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 3.15, -265)
 
 [node name="Cables9" parent="." instance=ExtResource("14")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.4, -278)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.15, -278)

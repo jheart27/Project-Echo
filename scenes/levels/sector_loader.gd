@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 ## Streams the level in sectors around the player so only nearby geometry
 ## and lights exist. The bands overlap by ~50m, so both sectors are loaded
@@ -5,6 +6,11 @@ extends Node3D
 ## airlock) and the far one is dropped only once fog and walls hide the
 ## seam. The start sector loads synchronously in _ready so there is a
 ## floor under the player on frame one (also after death reloads).
+##
+## In the editor this is a @tool script that loads EVERY sector as a
+## preview so the whole world is visible in the viewport. Preview children
+## have no owner, so they are never saved into the main scene — edit the
+## world in scenes/levels/sectors/*.tscn.
 
 const SECTORS := {
 	&"start": "res://scenes/levels/sectors/sector_start.tscn",
@@ -17,10 +23,16 @@ var _poll_accum := 0.0
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		for sector_name in SECTORS:
+			_add_sector(sector_name, load(SECTORS[sector_name]))
+		return
 	_add_sector(&"start", load(SECTORS[&"start"]))
 
 
 func _process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
 	_poll_accum += delta
 	if _poll_accum < 0.3:
 		return
