@@ -16,6 +16,11 @@ var _mat: StandardMaterial3D
 func _ready() -> void:
 	_light.light_color = light_color
 	_light.light_energy = light_energy
+	# Panels are everywhere — fade their omni out at range so distant
+	# sectors don't pay light cost (the emissive slab still glows).
+	_light.distance_fade_enabled = true
+	_light.distance_fade_begin = 35.0
+	_light.distance_fade_length = 12.0
 	_mat = StandardMaterial3D.new()
 	_mat.albedo_color = Color(0.08, 0.09, 0.1)
 	_mat.emission_enabled = true

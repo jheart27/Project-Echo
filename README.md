@@ -41,6 +41,17 @@ built 48m titan in scaffolding, gantry crane, elevated control room, and
 the hermetic gate to the next zone. Progression uses GameState flags, not
 an inventory — pickups/levers/generators just set flags that gates check.
 
+## Sector streaming
+
+The level is split into sector scenes (`scenes/levels/sectors/`) streamed
+by `sector_loader.gd` around the player: the start sector (corridor →
+chasm → maintenance level) and the deep sector (grand hall → lobby →
+titan wing). Bands overlap ~50m so both exist while crossing the bridge/
+hall boundary; the far sector unloads once fog and walls hide the seam.
+Light panels and the big standalone omnis also distance-fade. New zones
+should follow this pattern: one scene per sector, registered in the
+loader.
+
 ## Textures
 
 `textures/` holds 256px procedurally generated PS2-grunge albedo maps
