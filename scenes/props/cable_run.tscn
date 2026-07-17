@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Material" path="res://materials/heavy_rust.tres" id="1"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_seg"]
+size = Vector3(0.08, 0.08, 2.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_mid"]
+size = Vector3(0.08, 0.08, 2.0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_drop"]
+size = Vector3(0.05, 1.4, 0.05)
+
+[sub_resource type="BoxMesh" id="BoxMesh_drop_short"]
+size = Vector3(0.05, 0.8, 0.05)
+
+[node name="CableRun" type="Node3D"]
+
+[node name="Seg1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99, 0.139, 0, -0.139, 0.99, 0, -0.15, -1.05)
+mesh = SubResource("BoxMesh_seg")
+material_override = ExtResource("1")
+
+[node name="SegMid" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, -3)
+mesh = SubResource("BoxMesh_mid")
+material_override = ExtResource("1")
+
+[node name="SegMidB" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, -0.26, -3)
+mesh = SubResource("BoxMesh_mid")
+material_override = ExtResource("1")
+
+[node name="Seg3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.99, -0.139, 0, 0.139, 0.99, 0, -0.15, -4.95)
+mesh = SubResource("BoxMesh_seg")
+material_override = ExtResource("1")
+
+[node name="Drop1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, -1.0, -3.2)
+mesh = SubResource("BoxMesh_drop")
+material_override = ExtResource("1")
+
+[node name="Drop2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, -0.7, -1.6)
+mesh = SubResource("BoxMesh_drop_short")
+material_override = ExtResource("1")

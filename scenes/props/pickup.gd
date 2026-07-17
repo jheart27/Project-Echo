@@ -9,6 +9,13 @@ extends StaticBody3D
 @export var spin_speed := 1.2
 
 
+func _ready() -> void:
+	# GameState survives scene reloads (death respawn), so an already-
+	# collected pickup should not reappear.
+	if flag != &"" and GameState.has_flag(flag):
+		queue_free()
+
+
 func _process(delta: float) -> void:
 	rotate_y(delta * spin_speed)
 

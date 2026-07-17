@@ -27,10 +27,30 @@ and press **F5**. The main scene is `scenes/levels/test_corridor.tscn`.
 
 ## Current build
 
-One playable slice: corridor → keycard (look for the flickering light) →
-security door → chamber → bridge over a chasm → thermal goggles on the far
-platform. Progression uses GameState flags, not an inventory — pickups/
-levers/etc. just set flags that gates check.
+Following the "Beginning" board of the Construct map: corridor → keycard
+(look for the flickering light) → security door → Grand Columns chamber
+(catwalk loop above) → wrecked records office (thermal goggles) → bridge
+over a chasm → stairwell down → dark maintenance tunnels → pump station
+(prime the generator) → back up: the NO POWER door on the platform now
+opens → Grand Hall → Elevator lobby (dead shaft to Floors 25/50/75) →
+Labs and Controls → the cyber mutant pen. From the lobby, ramps climb to
+upper catwalks and a high doorway into the Titan Approach — sprint-jump
+the collapsed floor (falling drops you into a crawl duct that spits you
+back out over the lobby) — ending at the Titan Construct zone: a half-
+built 48m titan in scaffolding, gantry crane, elevated control room, and
+the hermetic gate to the next zone. Progression uses GameState flags, not
+an inventory — pickups/levers/generators just set flags that gates check.
+
+## Sector streaming
+
+The level is split into sector scenes (`scenes/levels/sectors/`) streamed
+by `sector_loader.gd` around the player: the start sector (corridor →
+chasm → maintenance level) and the deep sector (grand hall → lobby →
+titan wing). Bands overlap ~50m so both exist while crossing the bridge/
+hall boundary; the far sector unloads once fog and walls hide the seam.
+Light panels and the big standalone omnis also distance-fade. New zones
+should follow this pattern: one scene per sector, registered in the
+loader.
 
 ## Textures
 
@@ -40,6 +60,24 @@ look), applied via world-space triplanar materials in `materials/` with
 nearest-neighbour filtering. Sourcing CC0 photo textures (ambientCG /
 Poly Haven) is blocked from this dev environment's network; drop-in
 replacements just need to keep the same filenames.
+
+## NPCs
+
+A lost kid hides in the Labs and Controls room (warm glow, behind a
+desk). Interact to have her follow — interact again to make her wait —
+and lead her to the floor vent in the lobby; she escapes somewhere you
+can't follow. One hit kills her, permanently for that run, and the hall
+Stalker's patrol now sweeps into the lobby. Time the crossing.
+
+## Enemies
+
+Stalker Synths patrol the Grand Hall and the Titan assembly floor: tall,
+hunched, asymmetric machines with a sweeping searchlight eye (cyan while
+calm, red while hunting). They chase slightly faster than you can sprint —
+escape by breaking line of sight (pillars, doorways, the labs), not by
+outrunning them. One hit is death: the screen cuts to SIGNAL LOST and the
+stratum reassembles you at the start — but flags (keycard, power, optics,
+rescue) survive.
 
 ## Project layout
 
