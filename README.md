@@ -61,15 +61,23 @@ nearest-neighbour filtering. Sourcing CC0 photo textures (ambientCG /
 Poly Haven) is blocked from this dev environment's network; drop-in
 replacements just need to keep the same filenames.
 
+## NPCs
+
+A lost kid hides in the Labs and Controls room (warm glow, behind a
+desk). Interact to have her follow — interact again to make her wait —
+and lead her to the floor vent in the lobby; she escapes somewhere you
+can't follow. One hit kills her, permanently for that run, and the hall
+Stalker's patrol now sweeps into the lobby. Time the crossing.
+
 ## Enemies
 
 Stalker Synths patrol the Grand Hall and the Titan assembly floor: tall,
 hunched, asymmetric machines with a sweeping searchlight eye (cyan while
 calm, red while hunting). They chase slightly faster than you can sprint —
 escape by breaking line of sight (pillars, doorways, the labs), not by
-outrunning them. Getting caught hurts (red flash); at zero health the
-signal is lost and the stratum reassembles you at the start — but flags
-(keycard, power, optics) survive.
+outrunning them. One hit is death: the screen cuts to SIGNAL LOST and the
+stratum reassembles you at the start — but flags (keycard, power, optics,
+rescue) survive.
 
 ## Project layout
 

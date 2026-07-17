@@ -17,7 +17,8 @@ enum State { PATROL, CHASE, SEARCH }
 @export var lose_sight_time := 5.0
 @export var search_time := 6.0
 @export var attack_range := 1.7
-@export var attack_damage := 25.0
+## One hit is death — for you and for anything in the "fragile" group.
+@export var attack_damage := 100.0
 @export var attack_cooldown := 1.3
 
 var _state := State.PATROL
@@ -116,14 +117,19 @@ func _do_search(delta: float) -> void:
 
 
 func _try_attack() -> void:
-	var player := GameState.player
-	if player == null or _attack_timer > 0.0:
+	if _attack_timer > 0.0:
 		return
-	if global_position.distance_to(player.global_position) <= attack_range:
-		_attack_timer = attack_cooldown
-		if player.has_method("take_damage"):
-			var dir := _flat(player.global_position - global_position).normalized()
-			player.take_damage(attack_damage, dir)
+	var targets: Array = []
+	if GameState.player and is_instance_valid(GameState.player):
+		targets.append(GameState.player)
+	targets.append_array(get_tree().get_nodes_in_group("fragile"))
+	for target in targets:
+		if target is Node3D and global_position.distance_to(target.global_position) <= attack_range:
+			_attack_timer = attack_cooldown
+			if target.has_method("take_damage"):
+				var dir := _flat(target.global_position - global_position).normalized()
+				target.take_damage(attack_damage, dir)
+			return
 
 
 func _can_see_player() -> bool:
