@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/props/terminal.tscn" id="2"]
@@ -16,6 +16,7 @@
 [ext_resource type="PackedScene" path="res://scenes/props/generator.tscn" id="14"]
 [ext_resource type="PackedScene" path="res://scenes/props/dead_synth.tscn" id="15"]
 [ext_resource type="PackedScene" path="res://scenes/props/builder_bot.tscn" id="16"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/stalker_synth.tscn" id="17"]
 
 [sub_resource type="Environment" id="Environment_corridor"]
 background_mode = 1
@@ -1944,6 +1945,14 @@ message = "RETRIEVED BY SAFEGUARD. DO NOT FALL."
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChasmCatch"]
 shape = SubResource("BoxShape3D_catch")
+
+[node name="StalkerHall" parent="." instance=ExtResource("17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.2, -232)
+waypoints = PackedVector3Array(1, 0, -205, 1, 0, -232, -2, 0, -250, 3, 0, -258)
+
+[node name="StalkerTitan" parent="." instance=ExtResource("17")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 90, 0.2, -255)
+waypoints = PackedVector3Array(80, 0, -250, 115, 0, -255, 125, 0, -300, 90, 0, -305, 70, 0, -275)
 
 [node name="Player" parent="." instance=ExtResource("1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, -3)

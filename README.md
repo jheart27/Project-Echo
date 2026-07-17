@@ -50,6 +50,16 @@ nearest-neighbour filtering. Sourcing CC0 photo textures (ambientCG /
 Poly Haven) is blocked from this dev environment's network; drop-in
 replacements just need to keep the same filenames.
 
+## Enemies
+
+Stalker Synths patrol the Grand Hall and the Titan assembly floor: tall,
+hunched, asymmetric machines with a sweeping searchlight eye (cyan while
+calm, red while hunting). They chase slightly faster than you can sprint —
+escape by breaking line of sight (pillars, doorways, the labs), not by
+outrunning them. Getting caught hurts (red flash); at zero health the
+signal is lost and the stratum reassembles you at the start — but flags
+(keycard, power, optics) survive.
+
 ## Project layout
 
 - `autoload/game_state.gd` — global singleton (`GameState`), minimal for now

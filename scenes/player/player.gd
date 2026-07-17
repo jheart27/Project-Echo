@@ -37,7 +37,17 @@ signal interact_focus_changed(interactable: Node)
 @export_group("Interaction")
 @export var interact_distance := 2.5
 
+@export_group("Health")
+@export var max_health := 100.0
+## Health slowly recovers after this many seconds without taking a hit —
+## no medkits or health HUD; feedback is the red flash and audio later.
+@export var health_regen_delay := 8.0
+@export var health_regen_rate := 6.0
+
 var stamina: float
+var health: float
+var _dead := false
+var _hurt_timer := 0.0
 var _exhausted := false
 var _regen_cooldown := 0.0
 var _bob_phase := 0.0
@@ -49,6 +59,8 @@ var _focused_interactable: Node = null
 @onready var _interact_ray: RayCast3D = $Head/Camera3D/InteractRay
 @onready var _prompt_label: Label = $HUD/InteractPrompt
 @onready var _message_label: Label = $HUD/Message
+@onready var _damage_flash: ColorRect = $HUD/DamageFlash
+@onready var _death_overlay: ColorRect = $HUD/DeathOverlay
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var _message_tween: Tween
@@ -56,6 +68,7 @@ var _message_tween: Tween
 
 func _ready() -> void:
 	stamina = max_stamina
+	health = max_health
 	_base_fov = _camera.fov
 	_interact_ray.target_position = Vector3(0.0, 0.0, -interact_distance)
 	_interact_ray.add_exception(self)
@@ -66,6 +79,8 @@ func _ready() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _dead:
+		return
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		_head.rotate_x(-event.relative.y * mouse_sensitivity)
@@ -86,6 +101,18 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _dead:
+		if not is_on_floor():
+			velocity.y -= _gravity * delta
+		velocity.x = 0.0
+		velocity.z = 0.0
+		move_and_slide()
+		return
+
+	_hurt_timer = maxf(_hurt_timer - delta, 0.0)
+	if _hurt_timer == 0.0 and health < max_health:
+		health = minf(health + health_regen_rate * delta, max_health)
+
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 	elif Input.is_action_just_pressed("jump"):
@@ -190,3 +217,31 @@ func show_message(text: String, hold_time := 4.0) -> void:
 	)
 	_message_tween.tween_interval(hold_time)
 	_message_tween.tween_property(_message_label, "modulate:a", 0.0, 0.8)
+
+
+func take_damage(amount: float, from_direction: Vector3 = Vector3.ZERO) -> void:
+	if _dead:
+		return
+	health = maxf(health - amount, 0.0)
+	_hurt_timer = health_regen_delay
+	if from_direction != Vector3.ZERO:
+		velocity += from_direction.normalized() * 6.0 + Vector3.UP * 2.5
+	var flash := create_tween()
+	_damage_flash.modulate.a = 0.55
+	flash.tween_property(_damage_flash, "modulate:a", 0.0, 0.5)
+	if health == 0.0:
+		_die()
+
+
+func _die() -> void:
+	_dead = true
+	_prompt_label.text = ""
+	var fade := create_tween()
+	fade.tween_property(_death_overlay, "modulate:a", 1.0, 1.1)
+	fade.tween_callback(_respawn).set_delay(1.6)
+
+
+func _respawn() -> void:
+	# GameState is an autoload, so flags (keycard, power, goggles) survive
+	# the reload; collected pickups also stay gone (see pickup.gd).
+	get_tree().reload_current_scene()
