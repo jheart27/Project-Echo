@@ -1,3 +1,4 @@
+@tool
 extends Node3D
 ## Streams the level in sectors around the player so only nearby geometry
 ## and lights exist. The bands overlap by ~50m, so both sectors are loaded
@@ -5,6 +6,11 @@ extends Node3D
 ## airlock) and the far one is dropped only once fog and walls hide the
 ## seam. The start sector loads synchronously in _ready so there is a
 ## floor under the player on frame one (also after death reloads).
+##
+## In the editor this is a @tool script that loads EVERY sector as a
+## preview so the whole world is visible in the viewport. Preview children
+## have no owner, so they are never saved into the main scene — edit the
+## world in scenes/levels/sectors/*.tscn.
 
 const SECTORS := {
 	&"start": "res://scenes/levels/sectors/sector_start.tscn",
@@ -17,10 +23,16 @@ var _poll_accum := 0.0
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		for sector_name in SECTORS:
+			_add_sector(sector_name, load(SECTORS[sector_name]))
+		return
 	_add_sector(&"start", load(SECTORS[&"start"]))
 
 
 func _process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
 	_poll_accum += delta
 	if _poll_accum < 0.3:
 		return
@@ -51,6 +63,11 @@ func _wanted(p: Vector3) -> Array:
 	# in the deep sector) is standing long before the player can see it.
 	if (p.z < -140.0 and p.y > -4.5) or p.x > 40.0:
 		result.append(&"deep")
+	# Locked sectors (escorts, scripted sequences) stay resident regardless
+	# of where the player is — never delete an actor mid-scene.
+	for sector_name in SECTORS:
+		if sector_name not in result and GameState.is_sector_locked(sector_name):
+			result.append(sector_name)
 	return result
 
 
@@ -66,7 +83,14 @@ func _poll(sector_name: StringName) -> void:
 	var status := ResourceLoader.load_threaded_get_status(path)
 	if status == ResourceLoader.THREAD_LOAD_LOADED:
 		_pending.erase(sector_name)
-		_add_sector(sector_name, ResourceLoader.load_threaded_get(path))
+		var scene: PackedScene = ResourceLoader.load_threaded_get(path)
+		# The player may have left the band while the load was in flight;
+		# don't instantiate a sector nobody wants any more.
+		var player := GameState.player
+		if player and is_instance_valid(player) \
+				and sector_name not in _wanted(player.global_position):
+			return
+		_add_sector(sector_name, scene)
 	elif status != ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 		_pending.erase(sector_name)
 		push_warning("Sector failed to load: %s" % path)

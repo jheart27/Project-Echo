@@ -7,8 +7,10 @@ signal stamina_changed(current: float, maximum: float)
 signal interact_focus_changed(interactable: Node)
 
 @export_group("Movement")
-@export var walk_speed := 3.0
-@export var sprint_speed := 5.4
+## TESTING SPEEDS for quickly touring the map — tuned values are
+## walk 3.0 / sprint 5.4; restore them for the real game feel.
+@export var walk_speed := 9.0
+@export var sprint_speed := 14.0
 @export var acceleration := 9.0
 @export var deceleration := 11.0
 ## Deliberately low — a heavy hop over debris, not an FPS bunny jump.
@@ -102,10 +104,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if _dead:
+		# Damp rather than zero so the death-blow knockback still reads.
 		if not is_on_floor():
 			velocity.y -= _gravity * delta
-		velocity.x = 0.0
-		velocity.z = 0.0
+		velocity.x = lerpf(velocity.x, 0.0, 1.0 - exp(-4.0 * delta))
+		velocity.z = lerpf(velocity.z, 0.0, 1.0 - exp(-4.0 * delta))
 		move_and_slide()
 		return
 
@@ -179,6 +182,14 @@ func _update_head_bob(delta: float, speed: float, sprinting: bool) -> void:
 
 
 func _update_interact_focus() -> void:
+	# A freed interactable (collected pickup) compares equal to null in
+	# GDScript, which made the equality check below early-return forever
+	# and left the prompt stuck on screen. Validate explicitly first.
+	if _focused_interactable != null and not is_instance_valid(_focused_interactable):
+		_focused_interactable = null
+		_prompt_label.text = ""
+		interact_focus_changed.emit(null)
+
 	var hit: Node = null
 	if _interact_ray.is_colliding():
 		var collider := _interact_ray.get_collider()

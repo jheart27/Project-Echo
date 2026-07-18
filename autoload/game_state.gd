@@ -36,3 +36,27 @@ func set_thermal(active: bool) -> void:
 		return
 	thermal_active = active
 	thermal_toggled.emit(active)
+
+
+# --- Sector streaming locks -------------------------------------------------
+# Actors whose lifetime must not be cut short by streaming (an escorting
+# NPC, a scripted sequence) hold a lock on their sector; the loader keeps
+# locked sectors resident regardless of player position.
+
+var _sector_locks: Dictionary = {}
+
+
+func lock_sector(sector_name: StringName) -> void:
+	_sector_locks[sector_name] = _sector_locks.get(sector_name, 0) + 1
+
+
+func unlock_sector(sector_name: StringName) -> void:
+	var count: int = _sector_locks.get(sector_name, 0)
+	if count <= 1:
+		_sector_locks.erase(sector_name)
+	else:
+		_sector_locks[sector_name] = count - 1
+
+
+func is_sector_locked(sector_name: StringName) -> bool:
+	return _sector_locks.has(sector_name)

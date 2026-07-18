@@ -18,11 +18,40 @@ enum State { HIDING, FOLLOW, WAIT, ESCAPING, DEAD }
 @export var follow_distance := 1.6
 @export var vent_trigger_distance := 3.0
 @export var rescue_flag: StringName = &"kid_rescued"
+@export var death_flag: StringName = &"kid_dead"
+## The streaming sector this NPC lives in — locked while she follows so
+## the loader can never delete her mid-escort.
+@export var home_sector: StringName = &"deep"
 
 var _state := State.HIDING
+var _holds_sector_lock := false
+var _vent: Node3D
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var _glow: OmniLight3D = $Glow
+
+
+func _ready() -> void:
+	# Outcomes are permanent for the run: a rescued (or killed) kid must
+	# not reappear when the sector streams back in or the scene reloads.
+	if GameState.has_flag(rescue_flag) or GameState.has_flag(death_flag):
+		queue_free()
+		return
+	_vent = get_node_or_null(vent_point) as Node3D
+
+
+func _exit_tree() -> void:
+	_set_sector_lock(false)
+
+
+func _set_sector_lock(want: bool) -> void:
+	if want == _holds_sector_lock:
+		return
+	_holds_sector_lock = want
+	if want:
+		GameState.lock_sector(home_sector)
+	else:
+		GameState.unlock_sector(home_sector)
 
 
 func get_interact_prompt() -> String:
@@ -40,6 +69,7 @@ func interact(player: Node) -> void:
 	match _state:
 		State.HIDING:
 			_state = State.FOLLOW
+			_set_sector_lock(true)
 			_say(player, "\"You hum like the lifts do. Okay. The far grate — I can slip out there. Don't let the tall ones see me.\"")
 		State.FOLLOW:
 			_state = State.WAIT
@@ -80,16 +110,14 @@ func _do_follow(delta: float) -> void:
 
 
 func _check_vent() -> void:
-	var vent := get_node_or_null(vent_point) as Node3D
-	if vent and global_position.distance_to(vent.global_position) < vent_trigger_distance:
+	if _vent and global_position.distance_to(_vent.global_position) < vent_trigger_distance:
 		_state = State.ESCAPING
 
 
 func _do_escape(delta: float) -> void:
-	var vent := get_node_or_null(vent_point) as Node3D
-	if vent == null:
+	if _vent == null:
 		return
-	var to_vent := _flat(vent.global_position - global_position)
+	var to_vent := _flat(_vent.global_position - global_position)
 	if to_vent.length() > 0.4:
 		_face(to_vent, delta)
 		_steer(to_vent.normalized(), delta, walk_speed)
@@ -99,6 +127,7 @@ func _do_escape(delta: float) -> void:
 
 func _escape_now() -> void:
 	_state = State.DEAD
+	_set_sector_lock(false)
 	GameState.set_flag(rescue_flag)
 	_say(GameState.player, "She pries the grate and folds into the dark, somewhere too small for you. \"Thank you. Don't rust.\"")
 	escaped.emit()
@@ -109,8 +138,11 @@ func take_damage(_amount: float, from_direction: Vector3 = Vector3.ZERO) -> void
 	if _state == State.DEAD:
 		return
 	_state = State.DEAD
+	_set_sector_lock(false)
+	GameState.set_flag(death_flag)
 	_glow.light_energy = 0.0
 	remove_from_group("interactable")
+	remove_from_group("fragile")
 	var fall := create_tween()
 	var side := 1.0 if from_direction.x >= 0.0 else -1.0
 	fall.tween_property(self, "rotation:z", side * PI / 2.0, 0.45)\
