@@ -63,6 +63,11 @@ func _wanted(p: Vector3) -> Array:
 	# in the deep sector) is standing long before the player can see it.
 	if (p.z < -140.0 and p.y > -4.5) or p.x > 40.0:
 		result.append(&"deep")
+	# Locked sectors (escorts, scripted sequences) stay resident regardless
+	# of where the player is — never delete an actor mid-scene.
+	for sector_name in SECTORS:
+		if sector_name not in result and GameState.is_sector_locked(sector_name):
+			result.append(sector_name)
 	return result
 
 
@@ -78,7 +83,14 @@ func _poll(sector_name: StringName) -> void:
 	var status := ResourceLoader.load_threaded_get_status(path)
 	if status == ResourceLoader.THREAD_LOAD_LOADED:
 		_pending.erase(sector_name)
-		_add_sector(sector_name, ResourceLoader.load_threaded_get(path))
+		var scene: PackedScene = ResourceLoader.load_threaded_get(path)
+		# The player may have left the band while the load was in flight;
+		# don't instantiate a sector nobody wants any more.
+		var player := GameState.player
+		if player and is_instance_valid(player) \
+				and sector_name not in _wanted(player.global_position):
+			return
+		_add_sector(sector_name, scene)
 	elif status != ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 		_pending.erase(sector_name)
 		push_warning("Sector failed to load: %s" % path)

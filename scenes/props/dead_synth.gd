@@ -10,12 +10,19 @@ extends StaticBody3D
 ]
 
 var _next := 0
+# Child Timer instead of an awaited coroutine: it is freed with the node
+# when its sector streams out, so no resume-on-freed-instance errors.
+var _gutter_timer: Timer
 
 @onready var _eye_light: OmniLight3D = $EyeLight
 
 
 func _ready() -> void:
-	_gutter()
+	_gutter_timer = Timer.new()
+	_gutter_timer.one_shot = true
+	add_child(_gutter_timer)
+	_gutter_timer.timeout.connect(_on_gutter_timeout)
+	_gutter_timer.start(randf_range(0.3, 3.0))
 
 
 func get_interact_prompt() -> String:
@@ -28,9 +35,6 @@ func interact(player: Node) -> void:
 		_next = (_next + 1) % lines.size()
 
 
-func _gutter() -> void:
-	while is_inside_tree():
-		await get_tree().create_timer(randf_range(0.3, 3.0)).timeout
-		if not is_inside_tree():
-			return
-		_eye_light.light_energy = randf_range(0.05, 0.5)
+func _on_gutter_timeout() -> void:
+	_eye_light.light_energy = randf_range(0.05, 0.5)
+	_gutter_timer.start(randf_range(0.3, 3.0))

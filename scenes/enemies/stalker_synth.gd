@@ -29,6 +29,7 @@ var _search_timer := 0.0
 var _attack_timer := 0.0
 var _pause_timer := 0.0
 var _sweep_phase := 0.0
+var _scan_accum := 0.0
 
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
@@ -43,9 +44,15 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= _gravity * delta
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 
-	var sees_player := _can_see_player()
-	if sees_player:
-		_last_seen = GameState.player.global_position
+	# Vision is throttled while calm (raycasts are not free at 60Hz per
+	# enemy) and per-frame while hunting.
+	var seen: Node3D = null
+	_scan_accum += delta
+	if _state == State.CHASE or _scan_accum >= 0.15:
+		_scan_accum = 0.0
+		seen = _find_visible_target()
+	if seen:
+		_last_seen = seen.global_position
 		_lose_timer = lose_sight_time
 		if _state != State.CHASE:
 			_state = State.CHASE
@@ -56,7 +63,7 @@ func _physics_process(delta: float) -> void:
 		State.PATROL:
 			_do_patrol(delta)
 		State.CHASE:
-			_do_chase(delta, sees_player)
+			_do_chase(delta, seen != null)
 		State.SEARCH:
 			_do_search(delta)
 
@@ -86,8 +93,8 @@ func _do_patrol(delta: float) -> void:
 	_steer(to_target.normalized(), delta, patrol_speed)
 
 
-func _do_chase(delta: float, sees_player: bool) -> void:
-	if not sees_player:
+func _do_chase(delta: float, sees_target: bool) -> void:
+	if not sees_target:
 		_lose_timer -= delta
 		if _lose_timer <= 0.0:
 			_state = State.SEARCH
@@ -119,11 +126,11 @@ func _do_search(delta: float) -> void:
 func _try_attack() -> void:
 	if _attack_timer > 0.0:
 		return
-	var targets: Array = []
-	if GameState.player and is_instance_valid(GameState.player):
-		targets.append(GameState.player)
-	targets.append_array(get_tree().get_nodes_in_group("fragile"))
-	for target in targets:
+	# Cheap gate before touching groups: nothing can be in reach if the
+	# chase target position itself is still far away.
+	if global_position.distance_to(_last_seen) > attack_range * 3.0:
+		return
+	for target in _candidate_targets():
 		if target is Node3D and global_position.distance_to(target.global_position) <= attack_range:
 			_attack_timer = attack_cooldown
 			if target.has_method("take_damage"):
@@ -132,22 +139,36 @@ func _try_attack() -> void:
 			return
 
 
-func _can_see_player() -> bool:
-	var player := GameState.player
-	if player == null or not is_instance_valid(player):
-		return false
+## Player first (priority), then anything fragile — so an escorted NPC is
+## seen, chased, and hit by the same rules as the player.
+func _candidate_targets() -> Array:
+	var targets: Array = []
+	if GameState.player and is_instance_valid(GameState.player):
+		targets.append(GameState.player)
+	targets.append_array(get_tree().get_nodes_in_group("fragile"))
+	return targets
+
+
+func _find_visible_target() -> Node3D:
+	for target in _candidate_targets():
+		if target is Node3D and _can_see(target):
+			return target
+	return null
+
+
+func _can_see(target: Node3D) -> bool:
 	var eye_pos := global_position + Vector3.UP * 2.3
-	var target := player.global_position + Vector3.UP * 1.2
-	var to_player := target - eye_pos
-	if to_player.length() > detection_range:
+	var point := target.global_position + Vector3.UP * 0.9
+	var to_target := point - eye_pos
+	if to_target.length() > detection_range:
 		return false
 	var forward := -global_transform.basis.z
-	if forward.angle_to(to_player) > deg_to_rad(detection_fov_degrees) * 0.5:
+	if forward.angle_to(to_target) > deg_to_rad(detection_fov_degrees) * 0.5:
 		return false
-	var query := PhysicsRayQueryParameters3D.create(eye_pos, target)
+	var query := PhysicsRayQueryParameters3D.create(eye_pos, point)
 	query.exclude = [get_rid()]
 	var hit := get_world_3d().direct_space_state.intersect_ray(query)
-	return not hit.is_empty() and hit.collider == player
+	return not hit.is_empty() and hit.collider == target
 
 
 func _steer(direction: Vector3, delta: float, speed: float) -> void:

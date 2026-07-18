@@ -104,10 +104,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if _dead:
+		# Damp rather than zero so the death-blow knockback still reads.
 		if not is_on_floor():
 			velocity.y -= _gravity * delta
-		velocity.x = 0.0
-		velocity.z = 0.0
+		velocity.x = lerpf(velocity.x, 0.0, 1.0 - exp(-4.0 * delta))
+		velocity.z = lerpf(velocity.z, 0.0, 1.0 - exp(-4.0 * delta))
 		move_and_slide()
 		return
 
@@ -187,6 +188,7 @@ func _update_interact_focus() -> void:
 	if _focused_interactable != null and not is_instance_valid(_focused_interactable):
 		_focused_interactable = null
 		_prompt_label.text = ""
+		interact_focus_changed.emit(null)
 
 	var hit: Node = null
 	if _interact_ray.is_colliding():
