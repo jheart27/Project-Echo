@@ -396,7 +396,7 @@ size = Vector3(0.1, 3.2, 2.6)
 material = ExtResource("4")
 
 [node name="PenBentGate" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(0.906, 0.423, 0, -0.423, 0.906, 0, 0, 0, 1, 19.6, 1.1, -276.8)
+transform = Transform3D(0.906, 0.423, 0, -0.423, 0.906, 0, 0, 0, 1, 21.8, 1.1, -276.2)
 use_collision = true
 size = Vector3(0.1, 3, 2.4)
 material = ExtResource("4")
@@ -941,6 +941,11 @@ light_energy = 2.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 19.97, -273.5)
 light_energy = 1.6
 flicker = true
+
+[node name="PanelTitanSouth" parent="." instance=ExtResource("6")]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 58, 3, -329.93)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 3.0
 
 [node name="PanelTitanWest1" parent="." instance=ExtResource("6")]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 54.79, 14, -265)

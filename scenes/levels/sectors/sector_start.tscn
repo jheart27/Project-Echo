@@ -825,8 +825,13 @@ omni_range = 6.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 3.22, -201.5)
 light_energy = 1.2
 
+[node name="PanelStairBottom" parent="." instance=ExtResource("6")]
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -8.21, -6.3, -223.25)
+light_color = Color(1, 0.55, 0.25, 1)
+light_energy = 2.0
+
 [node name="PanelTunnel" parent="." instance=ExtResource("6")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, -5.63, -223.25)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, -5.63, -223.25)
 light_energy = 0.5
 flicker = true
 
